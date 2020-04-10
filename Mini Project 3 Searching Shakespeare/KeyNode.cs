@@ -1,13 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Mini_Project_3_Searching_Shakespeare
 {
     public class KeyNode : IChildNode
     {
-        public int Start { get; set; }
-        public int End { get; set; }
+        //Start = startindex (for searching)
+        public int Start { get; }
+
+        //ENd = endindex (for searching)
+        public int End { get; }
+
+        //Value = startindex of the suffix it represents
         public readonly int Value;
+
         public KeyNode(int start, int end, int value)
         {
             Start = start;
@@ -17,7 +22,7 @@ namespace Mini_Project_3_Searching_Shakespeare
 
         public void Add(string text, int start, int end, int value)
         {
-            //Handled in Node and LinkedNode
+            //The recursion stops here
         }
 
         public IChildNode? Locate(string text, string search)

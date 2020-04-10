@@ -8,9 +8,8 @@ namespace Mini_Project_3_Searching_Shakespeare
     public static class TextProcessor
     {
         //Reads the textfile (with a default path) and returns the text as a string with whitespaces replaced with spaces
-        public static string
-            //Change the path to your own location of the file if this does not work
-            ReadText(string path = @"..\..\shakespeare-complete-works.txt") 
+        //Change the path to your own location of the file if this does not work
+        public static string ReadText(string path = @"..\..\shakespeare-complete-works.txt")
         {
             try
             {

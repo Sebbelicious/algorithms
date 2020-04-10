@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using Newtonsoft.Json;
 
 namespace Mini_Project_3_Searching_Shakespeare
 {
@@ -26,8 +24,8 @@ namespace Mini_Project_3_Searching_Shakespeare
             var suffixTree = new SuffixTree(text);
             //Stop stopwatch
             watch1.Stop();
-            Console.WriteLine($"Total time for building suffixtree: {watch1.ElapsedMilliseconds} milliseconds"); 
-            
+            Console.WriteLine($"Total time for building suffixtree: {watch1.ElapsedMilliseconds} milliseconds");
+
             // // serialize JSON directly to a file
             // using (var file = File.CreateText(@"C:\Users\s_ele\RiderProjects\Algoritmer og Datastrukturer\Mini Project 3 Searching Shakespeare\suffixtree.json"))
             // {
@@ -45,14 +43,14 @@ namespace Mini_Project_3_Searching_Shakespeare
             // }
             // watch2.Stop();
             // Console.WriteLine($"Total time for reading suffixtree from a jsonfile: {watch2.ElapsedMilliseconds} milliseconds"); 
-            
+
             //Search
             const string searchStr = "to be, or";
             var watch3 = Stopwatch.StartNew();
             var res = (List<string>) suffixTree.Search(searchStr, 60);
             watch3.Stop();
             Console.WriteLine($"Total time for searching for {searchStr}: {watch3.ElapsedMilliseconds} milliseconds");
-            
+
             Console.WriteLine("Search results: ");
             foreach (var str in res)
             {

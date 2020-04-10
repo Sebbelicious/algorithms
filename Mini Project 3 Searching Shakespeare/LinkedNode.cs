@@ -5,8 +5,8 @@ namespace Mini_Project_3_Searching_Shakespeare
 {
     public class LinkedNode : IChildNode
     {
-        public int Start { get; set; }
-        public int End { get; set; }
+        public int Start { get; }
+        private int End { get; set; }
         public LinkedList<IChildNode> Children = new LinkedList<IChildNode>();
 
         public LinkedNode(int start, int end)
@@ -17,27 +17,32 @@ namespace Mini_Project_3_Searching_Shakespeare
 
         public void Add(string text, int start, int end, int value)
         {
-            if (end - start < End - Start) //key is shorter than nodeKey
+            //key is shorter than nodeKey
+            if (end - start < End - Start)
             {
                 var count = CountMatchingChars(text, start, end, Start);
                 SplitLinkedNodeAndAddNewKeyNode(start, end, value, count);
             }
-            else //nodekey is longer than key
+            //nodekey is longer than key
+            else
             {
                 var count = CountMatchingChars(text, Start, End, start);
 
-                if (Start + count < End) // Only part of the nodekey is in key
+                if (Start + count < End) // Only part of the nodetext is in current suffix
                 {
                     SplitLinkedNodeAndAddNewKeyNode(start, end, value, count);
                 }
-                else //The full nodekey is in key
+                //The full nodetext is in current suffix
+                else
                 {
                     start += count;
-                    if (start == end) //nodekey matches key
+                    //nodetext matches current suffix (and stops IndexOutOfRangeException in the else)
+                    if (start == end)
                     {
                         Children.AddLast(new KeyNode(start, end, value));
                     }
-                    else //continue add on child
+                    //continue add on child
+                    else
                     {
                         //Find child with matching starting char if exists
                         var node = Children.FirstOrDefault(child => text[child.Start].Equals(text[start]));
@@ -47,14 +52,13 @@ namespace Mini_Project_3_Searching_Shakespeare
                         {
                             Children.AddLast(new KeyNode(start, end, value));
                         }
-                        else if (node.GetType() == typeof(LinkedNode)) //Node is LinkedNode if true
+                        else if (node.GetType() == typeof(LinkedNode))
                         {
                             node.Add(text, start, end, value);
                         }
                         else //Node is KeyNode
                         {
-                            count = CountMatchingChars(text, start, end, node.Start);
-                            SplitKeyNodeAndAddBothToNewLinkedNode((KeyNode) node, start, end, value, count);
+                            SplitKeyNodeAndAddBothToNewLinkedNode(text, (KeyNode) node, start, end, value);
                         }
                     }
                 }
@@ -78,6 +82,7 @@ namespace Mini_Project_3_Searching_Shakespeare
 
         private void SplitLinkedNodeAndAddNewKeyNode(int start, int end, int value, int matchingCharCount)
         {
+            //Splits "this" into two LinkedNodes and adds new KeyNode for current suffix
             var newLinkedNode = new LinkedNode(Start + matchingCharCount, End)
             {
                 Children = Children
@@ -89,8 +94,13 @@ namespace Mini_Project_3_Searching_Shakespeare
             Children.AddLast(newKeyNode);
         }
 
-        private void SplitKeyNodeAndAddBothToNewLinkedNode(KeyNode node, int start, int end, int value, int count)
+        private void SplitKeyNodeAndAddBothToNewLinkedNode(string text, KeyNode node, int start, int end, int value)
         {
+            //Count matching chars
+            var count = CountMatchingChars(text, start, end, node.Start);
+
+            //Replace node with new LinkedNode with lenth og the count of charmatches and add two KeyNodes.
+            //One for node and one for the current value
             var newLinkedNode = new LinkedNode(node.Start, node.Start + count);
             var newKeyNode1 = new KeyNode(node.Start + count, node.End, node.Value);
             var newKeyNode2 = new KeyNode(start + count, end, value);
@@ -103,8 +113,12 @@ namespace Mini_Project_3_Searching_Shakespeare
         public IChildNode? Locate(string text, string search)
         {
             var nodeLength = End - Start;
-            //If search is shorter than or equal to node, if search is a substring of node return this, else return null
-            if (search.Length <= nodeLength) return text.Substring(Start, search.Length).Equals(search) ? this : null;
+            //If search is shorter than or equal to node
+            if (search.Length <= nodeLength)
+            {
+                //if search is a substring of node return this, else return null
+                return text.Substring(Start, search.Length).Equals(search) ? this : null;
+            }
 
             //Else Search is longer than node. Check if node is substring of search
             if (!search.StartsWith(text.Substring(Start, nodeLength))) return null;

@@ -2,8 +2,7 @@
 {
     public interface IChildNode : INode
     {
-        int Start { get; set; }
-        int End { get; set; }
-        
+        //To be able to get start on both LinkedNode and KeyNode
+        int Start { get; }
     }
 }

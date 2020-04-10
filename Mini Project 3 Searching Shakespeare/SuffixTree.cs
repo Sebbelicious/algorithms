@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Mini_Project_3_Searching_Shakespeare
 {
@@ -19,7 +18,6 @@ namespace Mini_Project_3_Searching_Shakespeare
         public SuffixTree(string text)
         {
             Text = text;
-            // -1 is given to signal non-values in root node
             _root = new Node();
             TextLower = text.ToLower();
 
@@ -39,8 +37,7 @@ namespace Mini_Project_3_Searching_Shakespeare
             search = search.ToLower();
             const int extraCharAmount = 130; //Extra chars to add to each searchresult
 
-            // Find the root node of the result
-            //The parent node which holds all search-results in it's children
+            //Find the parent node which holds all search-results in it's children
             var resNode = _root.Locate(TextLower, search);
 
             //No search matches
@@ -53,7 +50,10 @@ namespace Mini_Project_3_Searching_Shakespeare
             //Convert the match values to substrings
             foreach (var value in resValues)
             {
+                //Sets length of current substring and makes sure no IndexOutOfRangeException is thrown
                 var printLength = Math.Min(search.Length + extraCharAmount, Text.Length - value);
+
+                //Adds substring to the result list with given index
                 res.Add($"Index: {value}, {Text.Substring(value, printLength)}");
             }
 
