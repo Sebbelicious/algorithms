@@ -47,18 +47,18 @@ namespace Mini_Project_3_Searching_Shakespeare
             // Console.WriteLine($"Total time for reading suffixtree from a jsonfile: {watch2.ElapsedMilliseconds} milliseconds"); 
             
             //Search
-            // const string searchStr = "to be, or";
-            // var watch3 = Stopwatch.StartNew();
-            // var res = (List<string>) suffixTree.Search(searchStr, 60);
-            // watch3.Stop();
-            // Console.WriteLine($"Total time for searching for {searchStr}: {watch3.ElapsedMilliseconds} milliseconds");
-            //
-            // Console.WriteLine("Search results: ");
-            // foreach (var str in res)
-            // {
-            //     Console.WriteLine(str);
-            //     Console.WriteLine("------------------------------------------------------------------------");
-            // }
+            const string searchStr = "to be, or";
+            var watch3 = Stopwatch.StartNew();
+            var res = (List<string>) suffixTree.Search(searchStr, 60);
+            watch3.Stop();
+            Console.WriteLine($"Total time for searching for {searchStr}: {watch3.ElapsedMilliseconds} milliseconds");
+            
+            Console.WriteLine("Search results: ");
+            foreach (var str in res)
+            {
+                Console.WriteLine(str);
+                Console.WriteLine("------------------------------------------------------------------------");
+            }
 
             //Testing stuff
             // var resTest = res.FindAll(str => str.Contains("to be, or"));

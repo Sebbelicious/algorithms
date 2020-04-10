@@ -44,8 +44,9 @@
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="IChildNode.cs" />
+        <Compile Include="INode.cs" />
         <Compile Include="Node.cs" />
-        <Compile Include="Key.cs" />
         <Compile Include="KeyNode.cs" />
         <Compile Include="LinkedNode.cs" />
         <Compile Include="Program.cs" />

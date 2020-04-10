@@ -4,66 +4,33 @@ using System.Linq;
 
 namespace Mini_Project_3_Searching_Shakespeare
 {
-    public abstract class Node
+    public class Node : INode
     {
-        public Key Key;
-        public int Value;
-        public LinkedList<Node> Children = new LinkedList<Node>();
+        public LinkedList<IChildNode> Children = new LinkedList<IChildNode>();
 
-        protected Node(Key key, int value)
-        {
-            Key = key;
-            Value = value;
-        }
-
-        public virtual void Add(string text, Key key, int value)
+        public void Add(string text, int start, int end, int value)
         {
             //Find child with matching starting char if exists
-            var node = Children.FirstOrDefault(child => text[child.Key.Start].Equals(text[key.Start]));
+            var node = Children.FirstOrDefault(child => text[child.Start].Equals(text[start]));
 
             //Node is null, if there was no match
             if (node == null)
             {
-                Children.AddLast(new KeyNode(key, value));
+                Children.AddLast(new KeyNode(start, end, value));
             }
             else if (node.GetType() == typeof(LinkedNode)) //Node is LinkedNode if true
             {
-                if (key.End - key.Start >= node.Key.End - node.Key.Start) //key is longer than or equals nodekey
-                {
-                    var count = CountMatchingChars(text, node.Key.Start, node.Key.End, key.Start);
-
-                    if (node.Key.Start + count >= node.Key.End) //The full nodekey is in key
-                    {
-                        key.Start += count;
-                        if (key.Start == key.End) //nodekey matches key
-                        {
-                            node.Children.AddLast(new KeyNode(key, value));
-                        }
-                        else //continue add on child
-                        {
-                            node.Add(text, key, value);
-                        }
-                    }
-                    else // Only part of the nodekey is in key
-                    {
-                        SplitLinkedNodeAndAddNewKeyNode(node, key, value, count);
-                    }
-                }
-                else //nodekey is longer than key
-                {
-                    var count = CountMatchingChars(text, key.Start, key.End, node.Key.Start);
-                    SplitLinkedNodeAndAddNewKeyNode(node, key, value, count);
-                }
+                node.Add(text, start, end, value);
             }
             else //Node is KeyNode
             {
-                var count = CountMatchingChars(text, key.Start, key.End, node.Key.Start);
-                SplitKeyNodeAndAddBothToNewLinkedNode(node, key, value, count);
+                var count = CountMatchingChars(text, start, end, node.Start);
+                SplitKeyNodeAndAddBothToNewLinkedNode((KeyNode) node, start, end, value, count);
             }
         }
 
 
-        protected virtual int CountMatchingChars(string text, int intervalStart, int intervalEnd, int otherStart)
+        private static int CountMatchingChars(string text, int intervalStart, int intervalEnd, int otherStart)
         {
             var length = intervalEnd - intervalStart;
             for (var i = 0; i < length; i++)
@@ -77,59 +44,34 @@ namespace Mini_Project_3_Searching_Shakespeare
             return length;
         }
 
-        private void SplitLinkedNodeAndAddNewKeyNode(Node node, Key key, int value, int matchingCharCount)
-        {
-            var newLinkedNode = new LinkedNode(new Key(node.Key.Start + matchingCharCount, node.Key.End),
-                node.Key.Start + matchingCharCount)
-            {
-                Children = node.Children
-            };
-            node.Children = new LinkedList<Node>();
-            node.Children.AddLast(newLinkedNode);
-            node.Key.End = node.Key.Start + matchingCharCount;
-            var newKeyNode = new KeyNode(new Key(key.Start + matchingCharCount, key.End), value);
-            node.Children.AddLast(newKeyNode);
-        }
 
-        private void SplitKeyNodeAndAddBothToNewLinkedNode(Node node, Key key, int value, int count)
+        private void SplitKeyNodeAndAddBothToNewLinkedNode(KeyNode node, int start, int end, int value, int count)
         {
-            var newLinkedNode = new LinkedNode(new Key(node.Key.Start, node.Key.Start + count), node.Key.Start);
-            var newKeyNode1 = new KeyNode(new Key(node.Key.Start + count, node.Key.End), node.Value);
-            var newKeyNode2 = new KeyNode(new Key(key.Start + count, key.End), value);
+            var newLinkedNode = new LinkedNode(node.Start, node.Start + count);
+            var newKeyNode1 = new KeyNode(node.Start + count, node.End, node.Value);
+            var newKeyNode2 = new KeyNode(start + count, end, value);
             newLinkedNode.Children.AddLast(newKeyNode1);
             newLinkedNode.Children.AddLast(newKeyNode2);
             Children.Remove(node);
             Children.AddFirst(newLinkedNode);
         }
 
-        public virtual Node Locate(string text, string search)
+        public IChildNode? Locate(string text, string search)
         {
             //Find child node with matching start char if exists
-            var node = Children.FirstOrDefault(child => text[child.Key.Start].Equals(search[0]));
+            var node = Children.FirstOrDefault(child => text[child.Start].Equals(search[0]));
 
-            //No search matches
-            if (node == null) return null;
+            //Will return parent node of results or null if no there's search matches
+            return node?.Locate(text, search);
+        }
 
-            var nodeLength = node.Key.End - node.Key.Start;
-            //search is longer than node
-            if (search.Length > nodeLength)
+        public void FindResultValues(ICollection<int> values, int maxResultAmount)
+        {
+            foreach (var child in Children)
             {
-                //Check if node is substring of search
-                if (text.Substring(node.Key.Start, nodeLength).Equals(search.Substring(0, nodeLength)))
-                {
-                    //We need to go further in
-                    return node.Locate(text, search.Substring(nodeLength));
-                }
+                child.FindResultValues(values, maxResultAmount);
+                if (values.Count > maxResultAmount) break; //Lower number for better performance
             }
-            //Search is shorter than node and search matches start of node
-            else if (text.Substring(node.Key.Start, search.Length).Equals(search))
-            {
-                //The result node is found and returned
-                return node;
-            }
-
-            //The search had no matches
-            return null;
         }
     }
 }

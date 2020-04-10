@@ -20,15 +20,14 @@ namespace Mini_Project_3_Searching_Shakespeare
         {
             Text = text;
             // -1 is given to signal non-values in root node
-            _root = new LinkedNode(new Key(-1, -1), -1);
+            _root = new Node();
             TextLower = text.ToLower();
 
             //SuffixTree is made:
             var textLength = Text.Length;
             for (var i = 0; i < textLength; i++)
             {
-                var key = new Key(i, textLength);
-                _root.Add(TextLower, key, i);
+                _root.Add(TextLower, i, textLength, i);
             }
         }
 
@@ -48,32 +47,17 @@ namespace Mini_Project_3_Searching_Shakespeare
             if (resNode == null) return res;
 
             //Find all values of the searchmatch
-            FindValuesOfChildren(resValues, resNode, maxResultAmount);
+            resNode.FindResultValues(resValues, maxResultAmount);
             resValues.Sort();
 
             //Convert the match values to substrings
             foreach (var value in resValues)
             {
                 var printLength = Math.Min(search.Length + extraCharAmount, Text.Length - value);
-                res.Add($"Index: {value}, Text: {Text.Substring(value, printLength)}");
+                res.Add($"Index: {value}, {Text.Substring(value, printLength)}");
             }
 
             return res;
-        }
-
-        //Helper method to find all values from children of a node
-        private void FindValuesOfChildren(ICollection<int> values, Node node, int maxResultAmount)
-        {
-            if (node.GetType() == typeof(KeyNode))
-            {
-                values.Add(node.Value);
-            }
-
-            foreach (var child in node.Children)
-            {
-                if (values.Count > maxResultAmount) break; //Lower number for better performance
-                FindValuesOfChildren(values, child, maxResultAmount);
-            }
         }
     }
 }
