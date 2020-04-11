@@ -17,13 +17,13 @@ namespace Mini_Project_3_Searching_Shakespeare
 
         public void Add(string text, int start, int end, int value)
         {
-            //key is shorter than nodeKey
+            //Suffix is shorter than nodetext
             if (end - start < End - Start)
             {
                 var count = CountMatchingChars(text, start, end, Start);
                 SplitLinkedNodeAndAddNewKeyNode(start, end, value, count);
             }
-            //nodekey is longer than key
+            //Nodetext is shorter than suffix
             else
             {
                 var count = CountMatchingChars(text, Start, End, start);
